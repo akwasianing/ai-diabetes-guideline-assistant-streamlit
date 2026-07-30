@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import hashlib
@@ -115,7 +114,13 @@ def build_or_load_index(signature: str):
             with open(INDEX_FILE, "rb") as f:
                 payload = pickle.load(f)
             if payload.get("signature") == signature:
-                return payload["chunks"], payload["embeddings"]
+                saved_chunks = payload["chunks"]
+                chunks = [
+                    Chunk(**item) if isinstance(item, dict) else item
+                    for item in saved_chunks
+                ]
+                embeddings = np.asarray(payload["embeddings"], dtype=np.float32)
+                return chunks, embeddings
         except Exception:
             pass
 
@@ -142,10 +147,19 @@ def build_or_load_index(signature: str):
         pickle.dump(
             {
                 "signature": signature,
-                "chunks": chunks,
+                "chunks": [
+                    {
+                        "text": chunk.text,
+                        "source": chunk.source,
+                        "page": chunk.page,
+                        "chunk_id": chunk.chunk_id,
+                    }
+                    for chunk in chunks
+                ],
                 "embeddings": embeddings,
             },
             f,
+            protocol=pickle.HIGHEST_PROTOCOL,
         )
 
     return chunks, embeddings
