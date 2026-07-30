@@ -1,0 +1,4 @@
+The included guideline PDFs are provided for local educational use only.
+Review and obtain any required publisher permissions before public hosting,
+redistribution, or text/data-mining deployment. The project code is separate
+from ownership of the guideline content.
